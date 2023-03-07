@@ -1,0 +1,23 @@
+{
+  "name": "projeto18-linkr-backend",
+  "version": "1.0.0",
+  "description": "projeto em grupo de uma rede social de compartilhamento de links.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luccaviccini/projeto18-linkr-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luccaviccini/projeto18-linkr-backend/issues"
+  },
+  "homepage": "https://github.com/luccaviccini/projeto18-linkr-backend#readme"
+}

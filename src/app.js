@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
-import router from "./routes/index.router.js"
+import authroute from "./routes/auth.route.js"
 
 dotenv.config()
 
@@ -12,6 +12,6 @@ app.use(cors())
 const PORT = process.env.PORT
 
 //routes
-app.use( router )
+app.use( authroute )
 
 app.listen(PORT, () => console.log("Server running in port: " + PORT)) 

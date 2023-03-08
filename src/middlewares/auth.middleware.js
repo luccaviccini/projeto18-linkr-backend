@@ -7,7 +7,7 @@ export default async function auth(req, res, next) {
   }
   const token = auth.replace('Bearer ', '');
   const user = (await db.query(`
-        SELECT * FROM sessions WHERE token=$1
+        SELECT * FROM session WHERE token=$1
       `, [token])).rows[0];
 
   if (!user) {

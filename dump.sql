@@ -26,7 +26,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.hashtag (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     name text NOT NULL
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE public.hashtag (
 
 CREATE TABLE public."hashtagPost" (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "postId" integer NOT NULL,
     "hashtagId" integer NOT NULL
 );
@@ -89,7 +89,7 @@ ALTER SEQUENCE public.hashtag_id_seq OWNED BY public.hashtag.id;
 
 CREATE TABLE public.likes (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "postId" integer NOT NULL,
     "userId" integer NOT NULL
 );
@@ -121,7 +121,7 @@ ALTER SEQUENCE public.likes_id_seq OWNED BY public.likes.id;
 
 CREATE TABLE public.posts (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "userId" integer NOT NULL,
     description text,
     url text NOT NULL
@@ -156,7 +156,7 @@ CREATE TABLE public.session (
     id integer NOT NULL,
     "userId" integer NOT NULL,
     token text NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -190,7 +190,7 @@ CREATE TABLE public.users (
     password text NOT NULL,
     username text NOT NULL,
     "pictureUrl" text NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     blocked boolean DEFAULT false NOT NULL
 );
 

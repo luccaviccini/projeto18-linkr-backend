@@ -24,6 +24,8 @@ export async function getPosts(req, res) {
     try{
         const posts = await db.query(`
             SELECT * FROM posts
+            ORDER BY id DESC
+            LIMIT 20
         `);
         res.send(posts.rows);
     }catch(error){
@@ -31,3 +33,4 @@ export async function getPosts(req, res) {
         res.status(500).send("Internal server error");
     }
 }
+

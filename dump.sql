@@ -26,7 +26,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.hashtag (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     name text NOT NULL
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE public.hashtag (
 
 CREATE TABLE public."hashtagPost" (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "postId" integer NOT NULL,
     "hashtagId" integer NOT NULL
 );
@@ -89,7 +89,7 @@ ALTER SEQUENCE public.hashtag_id_seq OWNED BY public.hashtag.id;
 
 CREATE TABLE public.likes (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "postId" integer NOT NULL,
     "userId" integer NOT NULL
 );
@@ -121,7 +121,7 @@ ALTER SEQUENCE public.likes_id_seq OWNED BY public.likes.id;
 
 CREATE TABLE public.posts (
     id integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "userId" integer NOT NULL,
     description text,
     url text NOT NULL
@@ -149,22 +149,22 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 
 --
--- Name: session; Type: TABLE; Schema: public; Owner: -
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.session (
+CREATE TABLE public.sessions (
     id integer NOT NULL,
     "userId" integer NOT NULL,
     token text NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
 --
--- Name: session_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.session_id_seq
+CREATE SEQUENCE public.sessions_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -174,10 +174,10 @@ CREATE SEQUENCE public.session_id_seq
 
 
 --
--- Name: session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.session_id_seq OWNED BY public.session.id;
+ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 
 
 --
@@ -190,7 +190,7 @@ CREATE TABLE public.users (
     password text NOT NULL,
     username text NOT NULL,
     "pictureUrl" text NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT '2023-03-07 18:30:50.223755'::timestamp without time zone NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     blocked boolean DEFAULT false NOT NULL
 );
 
@@ -244,10 +244,10 @@ ALTER TABLE ONLY public.posts ALTER COLUMN id SET DEFAULT nextval('public.posts_
 
 
 --
--- Name: session id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session ALTER COLUMN id SET DEFAULT nextval('public.session_id_seq'::regclass);
+ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
 
 
 --
@@ -282,7 +282,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
@@ -322,10 +322,10 @@ SELECT pg_catalog.setval('public.posts_id_seq', 1, false);
 
 
 --
--- Name: session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_id_seq', 1, false);
+SELECT pg_catalog.setval('public.sessions_id_seq', 1, false);
 
 
 --
@@ -368,11 +368,11 @@ ALTER TABLE ONLY public.posts
 
 
 --
--- Name: session session_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session
-    ADD CONSTRAINT session_pk PRIMARY KEY (id);
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pk PRIMARY KEY (id);
 
 
 --
@@ -440,11 +440,11 @@ ALTER TABLE ONLY public.posts
 
 
 --
--- Name: session session_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session
-    ADD CONSTRAINT session_fk0 FOREIGN KEY ("userId") REFERENCES public.users(id);
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_fk0 FOREIGN KEY ("userId") REFERENCES public.users(id);
 
 
 --

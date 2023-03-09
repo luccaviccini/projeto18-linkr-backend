@@ -42,8 +42,53 @@ export async function getPosts(req, res) {
       })
     );
 
-    
     res.send(postData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+  }
+}
+
+export async function postLikePost(req, res) {
+  const { userId } = res.locals.session;
+  const { id } = req.params;
+
+  try {
+    const post = await db.query(
+      `
+                SELECT * FROM posts WHERE id=$1
+            `,
+      [id]
+    );
+
+    if (!post.rows[0]) {
+      return res.status(404).send("Post not found");
+    }
+
+    const like = await db.query(
+      `
+                SELECT * FROM likes WHERE "userId"=$1 AND "postId"=$2
+            `,
+      [userId, id]
+    );
+
+    if (like.rows[0]) {
+      await db.query(
+        `
+                    DELETE FROM likes WHERE "userId"=$1 AND "postId"=$2
+                `,
+        [userId, id]
+      );
+    } else {
+      await db.query(
+        `
+                    INSERT INTO likes ("userId", "postId") VALUES ($1, $2)
+                `,
+        [userId, id]
+      );
+    }
+
+    res.status(200).send("Like updated");
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");

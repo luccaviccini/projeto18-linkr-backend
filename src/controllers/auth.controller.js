@@ -44,6 +44,11 @@ export async function signIn(req, res) {
       await db.query('INSERT INTO session (token, "userId") VALUES ($1, $2)', [token, user.rows[0].id])
     }
 
+    res.locals.session = {
+      userId : user.rows[0].id,
+      token
+    }
+
     res.send({ token }) 
   } catch (err) {
     res.status(500).send(err.message)

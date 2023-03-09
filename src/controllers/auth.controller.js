@@ -34,22 +34,24 @@ export async function signIn(req, res) {
 
     if (!bcrypt.compareSync(password, user.rows[0].password)) return res.sendStatus(401)
 
-    const userSession = await db.query('SELECT * FROM session WHERE "userId" = $1', [user.rows[0].id])
+    const userSessions = await db.query('SELECT * FROM sessions WHERE "userId" = $1', [user.rows[0].id])
 
     const token = uuid()
 
-    if (userSession.rowCount !== 0) {
-      await db.query('UPDATE session SET token = $1', [token])
+    if (userSessions.rowCount !== 0) {
+      await db.query('UPDATE sessions SET token = $1', [token])
     }else {
-      await db.query('INSERT INTO session (token, "userId") VALUES ($1, $2)', [token, user.rows[0].id])
+      await db.query('INSERT INTO sessions (token, "userId") VALUES ($1, $2)', [token, user.rows[0].id])
     }
+
+
+    res.send({ token:token ,username:user.rows[0].username, pictureUrl:user.rows[0].pictureUrl}) 
 
     res.locals.session = {
       userId : user.rows[0].id,
       token
     }
 
-    res.send({ token }) 
   } catch (err) {
     res.status(500).send(err.message)
   }

@@ -6,7 +6,6 @@ export async function postNewPost(req, res) {
     const { userId } = res.locals.session;
     // get url and description from req.body
     const { url, description } = req.body;
-
     // insert into database
     try{
         await db.query(`
@@ -18,10 +17,17 @@ export async function postNewPost(req, res) {
     }catch(error){
         console.error(error);
         res.status(500).send("Internal server error");
+    }   
+}
+
+export async function getPosts(req, res) {
+    try{
+        const posts = await db.query(`
+            SELECT * FROM posts
+        `);
+        res.send(posts.rows);
+    }catch(error){
+        console.error(error);
+        res.status(500).send("Internal server error");
     }
-
-     
-
-
-    
 }

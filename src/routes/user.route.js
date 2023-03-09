@@ -5,6 +5,6 @@ import { getUsersBySearch } from "../controllers/user.controller.js";
 
 const userRoute = Router();
 
-userRoute.post("/users", getUsersBySearch);
+userRoute.get("/users",getUsersBySearch);
 
 export default userRoute;

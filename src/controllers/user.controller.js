@@ -1,5 +1,4 @@
-import db from "../config/database.connection.js";
-import { searchUsersByValue } from "../repositories/user.repository.js";
+import {db} from "../config/database.connection.js";
 
 export async function getUsersBySearch(req, res){
 
@@ -7,7 +6,11 @@ export async function getUsersBySearch(req, res){
 
         const search = req.query.value;
 
-        const result  = await searchUsersByValue(search);
+        const result  = await db.query(`
+            SELECT * FROM users 
+            WHERE users.username 
+            ILIKE '${search}%' 
+    `); 
 
         return res.status(200).send(result.rows);
     } catch (e) {

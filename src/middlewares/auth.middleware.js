@@ -1,4 +1,4 @@
-import { db } from '../config/database.connection.js';
+import db from '../config/database.connection.js';
 
 export default async function auth(req, res, next) {
   const auth = req.headers.authorization;

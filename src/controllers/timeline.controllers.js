@@ -120,3 +120,27 @@ export async function postLikePost(req, res) {
     res.status(500).send("Internal server error");
   }
 }
+
+export async function deletePost(req,res){
+    const {userId} = res.locals.session;
+    const {id} = req.params;
+
+    try {
+        const post = await db.query(`
+            SELECT * FROM posts WHERE id=$1
+        `, [id])
+
+        if(!post.rows[0]) return res.status(404).send("Post not found")
+
+        if(post.rows[0].userId !== userId) return res.status(403).send("Forbidden")
+
+        await db.query(`
+            DELETE FROM posts WHERE id=$1
+        `, [id])
+
+        res.status(200).send("Post deleted with success")
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+}

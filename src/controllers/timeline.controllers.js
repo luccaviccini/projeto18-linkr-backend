@@ -25,8 +25,10 @@ export async function postNewPost(req, res) {
 export async function getPosts(req, res) {
   try {
     const posts = await db.query(`
-      SELECT * FROM posts
-      ORDER BY id DESC
+      SELECT posts.*, users."pictureUrl" 
+      FROM posts 
+      JOIN users ON posts."userId" = users.id
+      ORDER BY posts.id DESC
       LIMIT 20
     `);
 
@@ -36,7 +38,7 @@ export async function getPosts(req, res) {
         return {
           url: post.url,
           title: metadata.title,
-          description: metadata.description,
+          metaDescription: metadata.description,
           imageUrl: metadata.image,
           siteUrl: metadata.url,
         };
@@ -61,6 +63,7 @@ export async function getPosts(req, res) {
         return {
           ...post,
           ...postMetadata,
+          authorPictureUrl: post.pictureUrl,
           likes: likes.rows.length,
           users: users.slice(-2).reverse(),
         };
@@ -73,6 +76,7 @@ export async function getPosts(req, res) {
     res.status(500).send("Internal server error");
   }
 }
+
 
 
 

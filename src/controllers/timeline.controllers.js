@@ -42,7 +42,31 @@ export async function getPosts(req, res) {
       })
     );
 
-    res.send(postData);
+    // add to post object number of likes of that post and the last 2 users username that liked that post
+    const postsWithLikes = await Promise.all(
+        posts.rows.map(async (post) => {
+            const likes = await db.query(`
+                SELECT * FROM likes WHERE "postId"=$1
+            `, [post.id])
+            const users = await Promise.all(
+                likes.rows.map(async (like) => {
+                    const user = await db.query(`
+                        SELECT username FROM users WHERE id=$1
+                    `, [like.userId])
+                    return user.rows[0].username
+                })
+            )
+            return {
+                ...post,
+                likes: likes.rows.length,
+                users: users.slice(-2).reverse()
+            }
+        })
+    )    
+
+    res.send(postsWithLikes);
+
+    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
@@ -79,6 +103,7 @@ export async function postLikePost(req, res) {
                 `,
         [userId, id]
       );
+      res.status(200).send("Post unliked");
     } else {
       await db.query(
         `
@@ -86,9 +111,10 @@ export async function postLikePost(req, res) {
                 `,
         [userId, id]
       );
+      res.status(200).send("Post liked");
     }
 
-    res.status(200).send("Like updated");
+    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");

@@ -11,7 +11,7 @@ export default async function auth(req, res, next) {
     const session = (
       await db.query(
         `
-        SELECT * FROM session WHERE token=$1
+        SELECT * FROM sessions WHERE token=$1
       `,
         [token]
       )

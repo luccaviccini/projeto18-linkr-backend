@@ -39,7 +39,7 @@ export async function signIn(req, res) {
     const token = uuid()
 
     if (userSessions.rowCount !== 0) {
-      await db.query('UPDATE sessions SET token = $1', [token])
+      await db.query('UPDATE sessions SET token = $1 WHERE "userId"= $2', [token, user.rows[0].id])
     }else {
       await db.query('INSERT INTO sessions (token, "userId") VALUES ($1, $2)', [token, user.rows[0].id])
     }

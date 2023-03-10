@@ -25,8 +25,10 @@ export async function postNewPost(req, res) {
 export async function getPosts(req, res) {
   try {
     const posts = await db.query(`
-      SELECT * FROM posts
-      ORDER BY id DESC
+      SELECT posts.*, users."pictureUrl", users.username as author
+      FROM posts
+      JOIN users ON posts."userId" = users.id
+      ORDER BY posts.id DESC
       LIMIT 20
     `);
 
@@ -36,14 +38,13 @@ export async function getPosts(req, res) {
         return {
           url: post.url,
           title: metadata.title,
-          description: metadata.description,
+          metaDescription: metadata.description,
           imageUrl: metadata.image,
           siteUrl: metadata.url,
         };
       })
     );
 
-    // add to post object number of likes of that post and the last 2 users username that liked that post
     const postsWithLikes = await Promise.all(
       posts.rows.map(async (post) => {
         const likes = await db.query(`
@@ -73,6 +74,8 @@ export async function getPosts(req, res) {
     res.status(500).send("Internal server error");
   }
 }
+
+
 
 
 

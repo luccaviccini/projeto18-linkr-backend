@@ -24,39 +24,86 @@ export async function getUsersBySearch(req, res){
 export async function getPostsUserSearched(req, res) {
 
     const userId = req.params.id;
+
     try {
-      const userData = await db.query(`
-        SELECT "username", "pictureUrl" FROM users
-        WHERE id = $1
+
+      const userInfo = await db.query(`
+      SELECT "username" AS postAuthor, "pictureUrl" As postPictureUrl
+      FROM users
+      WHERE id = $1
+    `, [userId]);
+
+      const posts = await db.query(`
+        SELECT posts.*, users."pictureUrl", users.username as author
+        FROM posts
+        JOIN users ON posts."userId" = users.id
+        WHERE posts."userId" = $1
+        ORDER BY posts.id DESC
+        LIMIT 20
       `, [userId]);
   
-      const postsData = await db.query(`
-        SELECT * FROM posts
-        WHERE "userId" = $1
-      `, [userId]);
+      const postData = await Promise.all(
+        posts.rows.map(async (post) => {
+          const metadata = await urlMetadata(post.url);
+          return {
+            url: post.url,
+            title: metadata.title,
+            metaDescription: metadata.description,
+            imageUrl: metadata.image,
+            siteUrl: metadata.url,
+          };
+        })
+      );
   
-      const postData = await Promise.all(postsData.rows.map(async (post) => {
-        const metadata = await urlMetadata(post.url);
-        return {
-          description: post.description,
-          likes: post.likes,
-          title: metadata.title,
-          linkDescription: metadata.description,
-          imageUrl: metadata.image,
-          siteUrl: metadata.url || post.url // use post.url if metadata.url is undefined
-        };
-      }));
+      const postsWithLikes = await Promise.all(
+        posts.rows.map(async (post) => {
+          const likes = await db.query(`
+            SELECT * FROM likes WHERE "postId"=$1
+          `, [post.id]);
+          const users = await Promise.all(
+            likes.rows.map(async (like) => {
+              const user = await db.query(`
+                SELECT username FROM users WHERE id=$1
+              `, [like.userId]);
+              return user.rows[0].username;
+            })
+          );
+          const postMetadata = postData.find(data => data.url === post.url) || {};
+          return {
+            ...post,
+            ...postMetadata,
+            likes: likes.rows.length,
+            users: users.slice(-2).reverse(),
+            userInfo: userInfo.rows[0]
+          };
+        })
+      );
   
-      const userPostsData = {
-        username: userData.rows[0].username,
-        pictureUrl: userData.rows[0].pictureUrl,
-        posts: postData,
-      };
-  
-      res.send(userPostsData);
+      res.send(postsWithLikes);
+      
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal server error');
+      res.status(500).send("Internal server error");
     }
   }
   
+
+  export async function getUserById(req, res){
+
+    const userId = req.params.id;
+
+    try {
+
+      const userInfo = await db.query(`
+      SELECT "username" AS postauthor, "pictureUrl" As postpictureurl
+      FROM users
+      WHERE id = $1
+    `, [userId]);
+
+        return res.status(200).send(userInfo.rows);
+    } catch (e) {
+
+        console.log(e);
+        return res.sendStatus(500);
+    }
+}

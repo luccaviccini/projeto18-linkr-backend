@@ -63,6 +63,7 @@ export async function getPosts(req, res) {
           ...post,
           ...postMetadata,
           likes: likes.rows.length,
+          postLiked: users,
           users: users.slice(-2).reverse(),
         };
       })

@@ -27,12 +27,6 @@ export async function getPostsUserSearched(req, res) {
 
     try {
 
-      const userInfo = await db.query(`
-      SELECT "username" AS postAuthor, "pictureUrl" As postPictureUrl
-      FROM users
-      WHERE id = $1
-    `, [userId]);
-
       const posts = await db.query(`
         SELECT posts.*, users."pictureUrl", users.username as author
         FROM posts
@@ -73,8 +67,8 @@ export async function getPostsUserSearched(req, res) {
             ...post,
             ...postMetadata,
             likes: likes.rows.length,
+            postLiked: users,
             users: users.slice(-2).reverse(),
-            userInfo: userInfo.rows[0]
           };
         })
       );

@@ -58,6 +58,7 @@ export async function getPosts(req, res) {
             )
             return {
                 ...post,
+                postLiked: users,
                 likes: likes.rows.length,
                 users: users.slice(-2).reverse()
             }

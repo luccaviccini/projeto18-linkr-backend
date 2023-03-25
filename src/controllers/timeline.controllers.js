@@ -25,54 +25,60 @@ export async function postNewPost(req, res) {
 export async function getPosts(req, res) {
   try {
     const posts = await db.query(`
-            SELECT * FROM posts
-            ORDER BY id DESC
-            LIMIT 20
-        `);
+      SELECT posts.*, users."pictureUrl", users.username as author
+      FROM posts
+      JOIN users ON posts."userId" = users.id
+      ORDER BY posts.id DESC
+      LIMIT 20
+    `);
 
     const postData = await Promise.all(
       posts.rows.map(async (post) => {
         const metadata = await urlMetadata(post.url);
         return {
+          url: post.url,
           title: metadata.title,
-          description: metadata.description,
+          metaDescription: metadata.description,
           imageUrl: metadata.image,
           siteUrl: metadata.url,
         };
       })
     );
 
-    // add to post object number of likes of that post and the last 2 users username that liked that post
     const postsWithLikes = await Promise.all(
-        posts.rows.map(async (post) => {
-            const likes = await db.query(`
-                SELECT * FROM likes WHERE "postId"=$1
-            `, [post.id])
-            const users = await Promise.all(
-                likes.rows.map(async (like) => {
-                    const user = await db.query(`
-                        SELECT username FROM users WHERE id=$1
-                    `, [like.userId])
-                    return user.rows[0].username
-                })
-            )
-            return {
-                ...post,
-                postLiked: users,
-                likes: likes.rows.length,
-                users: users.slice(-2).reverse()
-            }
-        })
-    )    
+      posts.rows.map(async (post) => {
+        const likes = await db.query(`
+          SELECT * FROM likes WHERE "postId"=$1
+        `, [post.id]);
+        const users = await Promise.all(
+          likes.rows.map(async (like) => {
+            const user = await db.query(`
+              SELECT username FROM users WHERE id=$1
+            `, [like.userId]);
+            return user.rows[0].username;
+          })
+        );
+        const postMetadata = postData.find(data => data.url === post.url) || {};
+        return {
+          ...post,
+          ...postMetadata,
+          likes: likes.rows.length,
+          postLiked: users,
+          users: users.slice(-2).reverse(),
+        };
+      })
+    );
 
     res.send(postsWithLikes);
-
-    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
   }
 }
+
+
+
+
 
 export async function postLikePost(req, res) {
   const { userId } = res.locals.session;

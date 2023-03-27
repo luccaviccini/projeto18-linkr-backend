@@ -23,14 +23,19 @@ export async function postNewPost(req, res) {
 }
 
 export async function getPosts(req, res) {
+  let { page } = req.query;
+  page = page || 1;
+
+
   try {
     const posts = await db.query(`
       SELECT posts.*, users."pictureUrl", users.username as author
       FROM posts
       JOIN users ON posts."userId" = users.id
       ORDER BY posts.id DESC
-      LIMIT 20
-    `);
+      LIMIT 10
+      OFFSET  $1
+    `, [(page - 1) * 10]);
 
     const postData = await Promise.all(
       posts.rows.map(async (post) => {

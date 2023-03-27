@@ -45,7 +45,7 @@ export async function signIn(req, res) {
     }
 
 
-    res.send({ token:token ,username:user.rows[0].username, pictureUrl:user.rows[0].pictureUrl}) 
+    res.send({ token:token ,username:user.rows[0].username, pictureUrl:user.rows[0].pictureUrl, userLoggedId: user.rows[0].id }) 
 
     res.locals.session = {
       userId : user.rows[0].id,
